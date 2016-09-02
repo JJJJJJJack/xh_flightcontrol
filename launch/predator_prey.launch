@@ -1,0 +1,204 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="crazyflieSDK" default="~/crazyflie-clients-python/lib" />
+  <arg name="joy_dev" default="/dev/input/js0" />
+  <arg name="port" default="3883" />
+
+  <arg name="Group1" default="crazyflie1" />
+  <arg name="Group2" default="crazyflie2" />
+  <arg name="Group3" default="crazyflie3" />
+
+  <arg name="uri1" default="radio://0/60/2M" />
+  <arg name="uri2" default="radio://0/16/2M" />
+  <arg name="uri3" default="radio://0/22/2M" />
+  <arg name="frame1" default="crazyflie1" />
+  <arg name="frame2" default="crazyflie2" />
+  <arg name="frame3" default="crazyflie3" />
+  <arg name="frequency" default="50" />
+  <arg name="RC_PARAM1" default="-0.1395" />
+  <arg name="RC_PARAM2" default="0.1193" />
+
+  <arg name="roll_trim1" default="0" />
+  <arg name="pitch_trim1" default="0" />
+  <arg name="x1" default="0.55" />
+  <arg name="y1" default="0.15" />
+  <arg name="z1" default="0.7" />
+  <arg name="yaw1" default="0" />
+  <arg name="rate1" default="100" />
+  <arg name="radius1" default="0.1" />
+  <arg name="enable_tracking1" default="false" />
+  <arg name="round_period1"  default="4.0" />
+
+  <arg name="roll_trim2" default="0" />
+  <arg name="pitch_trim2" default="-4" />
+  <arg name="x2" default="0.6" />
+  <arg name="y2" default="-0.9" />
+  <arg name="z2" default="0.7" />
+  <arg name="yaw2" default="0" />
+  <arg name="rate2" default="100" />
+  <arg name="radius2" default="0.5" />
+  <arg name="enable_tracking2" default="false" />
+  <arg name="round_period2"  default="8.0" />
+
+  <arg name="roll_trim3" default="0" />
+  <arg name="pitch_trim3" default="5" />
+  <arg name="x3" default="-0.6" />
+  <arg name="y3" default="-0.9" />
+  <arg name="z3" default="0.7" />
+  <arg name="yaw3" default="0" />
+  <arg name="rate3" default="100" />
+  <arg name="radius3" default="0.5" />
+  <arg name="enable_tracking3" default="false" />
+  <arg name="round_period3"  default="8.0" />
+
+  <arg name="TRAJEC_CIRCLE" default="1" />
+  <arg name="TRAJEC_SCAN" default="2" />
+  <arg name="TRAJEC_STEP" default="3" />
+  <arg name="TRAJEC_LINE" default="4" />
+  <arg name="TRAJEC_CHIRP" default="5" />
+  <arg name="TRAJEC_LINE_Y" default="9" />
+
+  <include file="$(find crazyflie_driver)/launch/crazyflie_server.launch">
+  </include>
+
+  <include file="/home/darc/catkin_ws/src/predator_pray_node/launch/pp_launch.launch">
+  </include>
+
+  <node pkg="mocap_optitrack"
+    type="mocap_node"
+    name="mocap_node"
+    respawn="false"
+    launch-prefix=""
+    required="true">
+    <rosparam file="$(find mocap_optitrack)/config/mocap_predator_prey.yaml" command="load" />
+  </node>
+
+  <group ns="crazyflie1">
+    <include file="$(find crazyflie_driver)/launch/crazyflie_add.launch">
+      <arg name="uri" value="$(arg uri1)" />
+      <arg name="tf_prefix" value="crazyflie1" />
+      <arg name="enable_logging" value="False" />
+      <arg name="roll_trim" value="$(arg roll_trim1)" />
+      <arg name="pitch_trim" value="$(arg pitch_trim1)" />
+    </include>
+    <node name="joy" pkg="joy" type="joy_node" output="screen">
+      <param name="dev" value="$(arg joy_dev)" />
+    </node>
+    <include file="$(find crazyflie_demo)/launch/xbox360.launch">
+    </include>
+    <node name="joystick_controller" pkg="crazyflie_demo" type="controller.py" output="screen">
+      <param name="use_crazyflie_controller" value="True" />
+    </node>
+    <include file="$(find crazyflie_controller)/launch/crazyflie60.launch">
+      <arg name="frame" value="$(arg frame1)" />
+      <arg name="frequency" value="$(arg frequency)" />
+      <arg name="RC_PARAM1" value="$(arg RC_PARAM1)" />
+      <arg name="RC_PARAM2" value="$(arg RC_PARAM2)" />
+    </include>
+<!--<include file="$(find trajectory_generate)/launch/trajectory_generate.launch">
+      <arg name="x" value="$(arg x1)" />
+      <arg name="y" value="$(arg y1)" />
+      <arg name="z" value="$(arg z1)" />
+      <arg name="yaw" value="$(arg yaw1)" />
+      <arg name="rate" value="$(arg rate1)" />
+      <arg name="radius" value="$(arg radius1)" />
+      <arg name="enable_tracking" value="$(arg enable_tracking1)" />
+      <arg name="round_period"     value="$(arg round_period1)" />
+      <arg name="trajectory_style" value="$(arg TRAJEC_CIRCLE)" />
+    </include>-->
+    <node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf">
+      <param name="output_frame" value="odom_combined"/>
+      <param name="freq" value="100.0"/>
+      <param name="debug" value="true"/>
+      <param name="self_diagnose" value="false"/>
+      <param name="odom_used" value="false"/>
+      <param name="imu_used" value="false"/>
+      <param name="vo_used" value="true"/>
+    </node>
+  </group>
+
+  <group ns="crazyflie2">
+    <include file="$(find crazyflie_driver)/launch/crazyflie_add.launch">
+      <arg name="uri" value="$(arg uri2)" />
+      <arg name="tf_prefix" value="crazyflie2" />
+      <arg name="enable_logging" value="False" />
+      <arg name="roll_trim" value="$(arg roll_trim2)" />
+      <arg name="pitch_trim" value="$(arg pitch_trim2)" />
+    </include>
+    <node name="joy" pkg="joy" type="joy_node" output="screen">
+      <param name="dev" value="$(arg joy_dev)" />
+    </node>
+    <node name="joystick_controller" pkg="crazyflie_demo" type="controller.py" output="screen">
+      <param name="use_crazyflie_controller" value="True" />
+    </node>
+    <include file="$(find crazyflie_controller)/launch/crazyflie16.launch">
+      <arg name="frame" value="$(arg frame2)" />
+      <arg name="frequency" value="$(arg frequency)" />
+      <arg name="RC_PARAM1" value="$(arg RC_PARAM1)" />
+      <arg name="RC_PARAM2" value="$(arg RC_PARAM2)" />
+    </include>
+<!--<include file="$(find trajectory_generate)/launch/trajectory_generate.launch">
+      <arg name="x" value="$(arg x2)" />
+      <arg name="y" value="$(arg y2)" />
+      <arg name="z" value="$(arg z2)" />
+      <arg name="yaw" value="$(arg yaw2)" />
+      <arg name="rate" value="$(arg rate2)" />
+      <arg name="radius" value="$(arg radius2)" />
+      <arg name="enable_tracking" value="$(arg enable_tracking2)" />
+      <arg name="round_period"     value="$(arg round_period2)" />
+      <arg name="trajectory_style" value="$(arg TRAJEC_CIRCLE)" />
+    </include>-->
+    <node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf">
+      <param name="output_frame" value="odom_combined"/>
+      <param name="freq" value="100.0"/>
+      <param name="debug" value="true"/>
+      <param name="self_diagnose" value="false"/>
+      <param name="odom_used" value="false"/>
+      <param name="imu_used" value="false"/>
+      <param name="vo_used" value="true"/>
+    </node>
+  </group>
+
+  <group ns="crazyflie3">
+    <include file="$(find crazyflie_driver)/launch/crazyflie_add.launch">
+      <arg name="uri" value="$(arg uri3)" />
+      <arg name="tf_prefix" value="crazyflie3" />
+      <arg name="enable_logging" value="False" />
+      <arg name="roll_trim" value="$(arg roll_trim3)" />
+      <arg name="pitch_trim" value="$(arg pitch_trim3)" />
+    </include>
+    <node name="joy" pkg="joy" type="joy_node" output="screen">
+      <param name="dev" value="$(arg joy_dev)" />
+    </node>
+    <node name="joystick_controller" pkg="crazyflie_demo" type="controller.py" output="screen">
+      <param name="use_crazyflie_controller" value="True" />
+    </node>
+    <include file="$(find crazyflie_controller)/launch/crazyflie22.launch">
+      <arg name="frame" value="$(arg frame3)" />
+      <arg name="frequency" value="$(arg frequency)" />
+      <arg name="RC_PARAM1" value="$(arg RC_PARAM1)" />
+      <arg name="RC_PARAM2" value="$(arg RC_PARAM2)" />
+    </include>
+<!--<include file="$(find trajectory_generate)/launch/trajectory_generate.launch">
+      <arg name="x" value="$(arg x3)" />
+      <arg name="y" value="$(arg y3)" />
+      <arg name="z" value="$(arg z3)" />
+      <arg name="yaw" value="$(arg yaw3)" />
+      <arg name="rate" value="$(arg rate3)" />
+      <arg name="radius" value="$(arg radius3)" />
+      <arg name="enable_tracking" value="$(arg enable_tracking3)" />
+      <arg name="round_period"     value="$(arg round_period3)" />
+      <arg name="trajectory_style" value="$(arg TRAJEC_CIRCLE)" />
+    </include>-->
+    <node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf">
+      <param name="output_frame" value="odom_combined"/>
+      <param name="freq" value="100.0"/>
+      <param name="debug" value="true"/>
+      <param name="self_diagnose" value="false"/>
+      <param name="odom_used" value="false"/>
+      <param name="imu_used" value="false"/>
+      <param name="vo_used" value="true"/>
+    </node>
+  </group>
+
+</launch>

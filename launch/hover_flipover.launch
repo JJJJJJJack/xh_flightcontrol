@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="crazyflieSDK"      default="~/crazyflie/crazyflie-clients-python/lib" />
+  <arg name="joy_dev"           default="/dev/input/js0" />
+  <arg name="ip"                default="vicon" />
+  <arg name="port"              default="3883" />
+
+  <arg name="uri"               default="radio://0/42/2M" />
+  <arg name="frame"             default="crazyflie" />
+  <arg name="frequency"         default="50" />
+  <arg name="RC_PARAM1"         default="-0.1395" />
+  <arg name="RC_PARAM2"         default="0.1193" />
+
+  <arg name="roll_trim"         default="0" />
+  <arg name="pitch_trim"        default="0" />
+  <arg name="x"                 default="0" />
+  <arg name="y"                 default="0.0" />
+  <arg name="z"                 default="1.5" />
+  <arg name="yaw"               default="0" />
+  <arg name="rate"              default="100" />
+  <arg name="radius"            default="0.3" />
+  <arg name="enable_tracking"   default="true" />
+  <arg name="round_period"      default="2.0" />
+  <arg name="TRAJEC_CIRCLE"     default="1" />
+  <arg name="TRAJEC_SCAN"       default="2" />
+  <arg name="TRAJEC_STEP"       default="3" />
+  <arg name="TRAJEC_LINE"       default="4" />
+  <arg name="TRAJEC_CHIRP"      default="5" />
+  <arg name="TRAJEC_TUNING_YAW" default="6" />
+  <arg name="TRAJEC_L1_CIRCLE"  default="7" />
+  <arg name="FLIP_OVER"         default="8" />
+
+  <include file="$(find crazyflie_driver)/launch/crazyflie_server.launch">
+  </include>
+
+  <group ns="crazyflie">
+    <include file="$(find crazyflie_driver)/launch/crazyflie_add.launch">
+      <arg name="uri"        value="$(arg uri)" />
+      <arg name="tf_prefix"  value="crazyflie" />
+      <arg name="roll_trim"  value="$(arg roll_trim)" />
+      <arg name="pitch_trim" value="$(arg pitch_trim)" />
+    </include>
+
+    <node name="joy" pkg="joy" type="joy_node" output="screen">
+      <param name="dev" value="$(arg joy_dev)" />
+    </node>
+    
+    <include file="$(find crazyflie_demo)/launch/xbox360.launch">
+    </include>
+    <node name="joystick_controller" pkg="crazyflie_demo" type="controller.py" output="screen">
+      <param name="use_crazyflie_controller" value="True" />
+    </node>
+
+    <node name="trajectory_generate" pkg="trajectory_generate" type="trajectory_generate" respawn="false" launch-prefix="" output="screen">
+      <param name="x"                value="$(arg x)" />
+      <param name="y"                value="$(arg y)" />
+      <param name="z"                value="$(arg z)" />
+      <param name="yaw"              value="$(arg yaw)" />
+      <param name="rate"             value="$(arg rate)" />
+      <param name="radius"           value="$(arg radius)" />
+      <param name="enable_tracking"  value="$(arg enable_tracking)" />
+      <param name="round_period"     value="$(arg round_period)" />
+      <param name="trajectory_style" value="$(arg FLIP_OVER)" />
+    </node>
+
+    <node pkg="mocap_optitrack"
+      type="mocap_node"
+      name="mocap_node"
+      respawn="false"
+      launch-prefix=""
+      required="true">
+      <rosparam file="$(find mocap_optitrack)/config/mocap.yaml" command="load" />
+    </node>
+
+    <include file="$(find crazyflie_controller)/launch/crazyflie2_flipover.launch">
+      <arg name="frame"     value="$(arg frame)" />
+      <arg name="frequency" value="$(arg frequency)" />
+      <arg name="RC_PARAM1" value="$(arg RC_PARAM1)" />
+      <arg name="RC_PARAM2" value="$(arg RC_PARAM2)" />
+    </include>
+
+    <!--<node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf">
+      <param name="output_frame" value="odom_combined"/>
+      <param name="base_footprint_frame" value="base_footprint"/>
+      <param name="freq" value="30.0"/>
+      <param name="sensor_timeout" value="99999"/>  
+      <param name="odom_used" value="false"/>
+      <param name="imu_used" value="true"/>
+      <param name="vo_used" value="true"/>
+    
+      <remap from="odom" to="pr2_base_odometry/odom" />
+    </node>-->
+
+  </group>
+
+</launch>
