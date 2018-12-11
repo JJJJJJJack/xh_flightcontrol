@@ -11,8 +11,8 @@
   <arg name="RC_PARAM1" default="-0.1395" />
   <arg name="RC_PARAM2" default="0.1193" />
 
-  <arg name="roll_trim" default="-4" />
-  <arg name="pitch_trim" default="-18" />
+  <arg name="roll_trim" default="0" />
+  <arg name="pitch_trim" default="0" />
   <arg name="x" default="-0.0" />
   <arg name="y" default="-0.0" />
   <arg name="z" default="0.3" />
@@ -73,7 +73,7 @@
       <param name="trajectory_style" value="$(arg TRAJEC_SQUARE)" />
     </node>
 
-    <node pkg="mocap_optitrack"
+    <!--node pkg="mocap_optitrack"
       type="mocap_node"
       name="mocap_node"
       respawn="false"
@@ -83,7 +83,7 @@
     </node>
 
     <node name="glviewer" pkg="glviewer" type="glviewer" output="screen">
-    </node>
+    </node-->
 
     <node pkg="robot_pose_ekf" type="robot_pose_ekf" name="robot_pose_ekf">
       <param name="output_frame" value="odom_combined"/>

@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="TESTNAME"    default="pure_ground"/>
+  <arg name="startHeight" default="0.04"/>
+  <arg name="stepHeight"  default="0.05"/>
+  <arg name="stopHeight"  default="0.54"/>
+  <arg name="PWM1"        default="30000"/>
+  <arg name="PWM2"        default="20000"/>
+  <arg name="rate"        default="50"/>
+  <arg name="uri"         default="radio://0/72/2M" />
+  <arg name="laserheight" default="False"/>
+
+  <!-- run vicon bridge separately-->
+  <!--include file="$(find vicon_bridge)/launch/vicon.launch"/-->
+
+  <include file="$(find crazyflie_driver)/launch/crazyflie_server.launch">
+  </include>
+
+  <group ns="crazyflie">
+    <include file="$(find crazyflie_driver)/launch/crazyflie_add.launch">
+      <arg name="uri" value="$(arg uri)" />
+      <arg name="tf_prefix" value="crazyflie" />
+      <arg name="enable_logging" value="True" />
+    </include>
+
+    <node name="ge_teststand" pkg="crazyflie_controller" type="ge_teststand" output="screen">
+      <param name="startHeight" value="$(arg startHeight)"/>
+      <param name="stepHeight"  value="$(arg stepHeight)"/>
+      <param name="stopHeight"  value="$(arg stopHeight)"/>
+      <param name="rate"        value="$(arg rate)"/>
+      <param name="PWM1"        value="$(arg PWM1)"/>
+      <param name="PWM2"        value="$(arg PWM2)"/>
+      <param name="testName"    value="$(arg TESTNAME)"/>
+      <param name="laserheight" value="$(arg laserheight)"/>
+    </node>
+  </group>
+  <!--machine name="jack_odroid" address="jack_odroid" user="odroid" password="odroid" timeout="20" env-loader="/home/odroid/catkin_ws/devel/groundcontrol_env_loader.sh" allow_agent="False" look_for_keys="False"/-->
+  
+  <!-- Flir Lepton Interface -->
+  <!--node machine="jack_odroid" name="heightcontrol" pkg="stepper_driver" type="stepper_feedback"/>
+  <node machine="jack_odroid" name="loadcell_publisher" pkg="stepper_driver" type="loadcell_publisher"/-->
+
+</launch>
