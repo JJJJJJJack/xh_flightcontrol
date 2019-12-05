@@ -1,11 +1,12 @@
 <?xml version="1.0"?>
 <launch>
-  <arg name="TESTNAME"      default="single_R16"/>
-  <arg name="startHeight"   default="0.02"/>
-  <arg name="stepHeight"    default="0.05"/>
-  <arg name="stopHeight"    default="0.62"/>
-  <arg name="PWM1"          default="30000"/>
-  <arg name="PWM2"          default="20000"/>
+  <arg name="TESTNAME"      default="Z_0 = 0.13"/>
+  <arg name="rotorPitch"    default="15.0"/>
+  <arg name="startHeight"   default="0.1069875"/>
+  <arg name="stepHeight"    default="0.04"/>
+  <arg name="stopHeight"    default="0.6669875"/>
+  <arg name="PWM1"          default="21000"/>
+  <arg name="PWM2"          default="24000"/>
   <arg name="rate"          default="50"/>
   <arg name="uri"           default="radio://0/44/2M" />
   <arg name="laserheight"   default="True"/>
@@ -34,12 +35,9 @@
       <param name="testName"      value="$(arg TESTNAME)"/>
       <param name="laserheight"   value="$(arg laserheight)"/>
       <param name="logging_power" value="$(arg logging_power)"/>
+      <param name="rotorPitch"    value="$(arg rotorPitch)"/>
     </node>
+    
   </group>
-  <!--machine name="jack_odroid" address="jack_odroid" user="odroid" password="odroid" timeout="20" env-loader="/home/odroid/catkin_ws/devel/groundcontrol_env_loader.sh" allow_agent="False" look_for_keys="False"/-->
   
-  <!-- Flir Lepton Interface -->
-  <!--node machine="jack_odroid" name="heightcontrol" pkg="stepper_driver" type="stepper_feedback"/>
-  <node machine="jack_odroid" name="loadcell_publisher" pkg="stepper_driver" type="loadcell_publisher"/-->
-
 </launch>
