@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="joy_dev" default="/dev/input/js0" />
+
+  <!-- Joystick -->
+  <node name="joy" pkg="joy" type="joy_node" output="screen">
+    <param name="dev" value="$(arg joy_dev)" />
+  </node>
+
+  <!-- Controller -->
+  <node name="flight_controller" pkg="flight_controller" type="bicopter_optitrack_controller" respawn="true" output="screen"/>
+  
+  <!-- SBUS communication -->
+  <node name="serial_to_sbus" pkg="serial_to_sbus" type="serial_to_sbus" respawn="true" output="screen"/>
+
+  <!-- Trajectory -->
+  <!--node name="trajectory_generate" pkg="trajectory_generate" type="trajectory_generate" respawn="false" launch-prefix="" output="screen"/-->
+
+  <!-- Viewer -->
+  <!--node name="glviewer" pkg="glviewer" type="glviewer" output="screen"-->
+  <!--/node-->
+
+
+</launch>
