@@ -2,8 +2,25 @@
 <launch>
   <arg name="joy_dev" default="/dev/input/js0" />
 
+  <!-- PID parameters -->
+  <param name="/controller/KP_x" type="double" value="0.5"/>
+  <param name="/controller/KI_x" type="double" value="0.5"/>
+  <param name="/controller/KD_x" type="double" value="0.5"/>
+  
+  <param name="/controller/KP_y" type="double" value="0.5"/>
+  <param name="/controller/KI_y" type="double" value="0.5"/>
+  <param name="/controller/KD_y" type="double" value="0.5"/>
+  
+  <param name="/controller/KP_z" type="double" value="0.5"/>
+  <param name="/controller/KI_z" type="double" value="0.5"/>
+  <param name="/controller/KD_z" type="double" value="0.5"/>
+  
+  <param name="/controller/KP_yaw" type="double" value="0.5"/>
+  <param name="/controller/KI_yaw" type="double" value="0.5"/>
+  <param name="/controller/KD_yaw" type="double" value="0.5"/>
+
   <!-- Joystick -->
-  <node name="joy" pkg="joy" type="joy_node" output="screen">
+  <node name="joy" pkg="joy" type="joy_node" output="screen" respawn="false">
     <param name="dev" value="$(arg joy_dev)" />
   </node>
 
@@ -11,7 +28,7 @@
   <node name="flight_controller" pkg="flight_controller" type="bicopter_optitrack_controller" respawn="true" output="screen"/>
   
   <!-- SBUS communication -->
-  <node name="serial_to_sbus" pkg="serial_to_sbus" type="serial_to_sbus" respawn="true" output="screen"/>
+  <node name="serial_to_sbus" pkg="serial_to_sbus" type="serial_to_sbus" respawn="false" output="screen"/>
 
   <!-- Trajectory -->
   <!--node name="trajectory_generate" pkg="trajectory_generate" type="trajectory_generate" respawn="false" launch-prefix="" output="screen"/-->
