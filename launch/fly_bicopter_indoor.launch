@@ -3,21 +3,43 @@
   <arg name="joy_dev" default="/dev/input/js0" />
 
   <!-- PID parameters -->
-  <param name="/controller/KP_x" type="double" value="0.5"/>
+  <!--param name="/controller/KP_x" type="double" value="0.5"/>
   <param name="/controller/KI_x" type="double" value="0.5"/>
   <param name="/controller/KD_x" type="double" value="0.5"/>
+  <param name="/controller/X_limit" type="double" value="1.0"/>
   
   <param name="/controller/KP_y" type="double" value="0.5"/>
   <param name="/controller/KI_y" type="double" value="0.5"/>
   <param name="/controller/KD_y" type="double" value="0.5"/>
+  <param name="/controller/Y_limit" type="double" value="1.0"/>
   
   <param name="/controller/KP_z" type="double" value="0.5"/>
   <param name="/controller/KI_z" type="double" value="0.5"/>
   <param name="/controller/KD_z" type="double" value="0.5"/>
+  <param name="/controller/Z_limit" type="double" value="1.0"/>
   
   <param name="/controller/KP_yaw" type="double" value="0.5"/>
   <param name="/controller/KI_yaw" type="double" value="0.5"/>
   <param name="/controller/KD_yaw" type="double" value="0.5"/>
+  <param name="/controller/YAW_limit" type="double" value="1.0"/>
+
+  <param name="/controller/TAKEOFF_HEIGHT" type="double" value="0.05"/>
+  <param name="/controller/TAKEOFF_THROTTLE" type="double" value="0.4"/>
+  <param name="/controller/TAKEOFF_THROTTLE_TIME" type="double" value="0.4"/>
+  <param name="/controller/LAND_TIME" type="double" value="5.0"/>
+
+  <param name="/controller/DEFAULT_goal_x" type="double" value="0.0"/>
+  <param name="/controller/DEFAULT_goal_y" type="double" value="0.0"/>
+  <param name="/controller/DEFAULT_goal_z" type="double" value="0.5"/>
+  <param name="/controller/DEFAULT_goal_yaw" type="double" value="0.0"/-->
+
+  <rosparam file="$(find flight_controller)/config/pid_Bicopter.yaml"/>
+  <arg name="TRAJEC_CIRCLE" default="1" />
+  <arg name="TRAJEC_SCAN" default="2" />
+  <arg name="TRAJEC_STEP" default="3" />
+  <arg name="TRAJEC_LINE" default="4" />
+  <arg name="TRAJEC_CHIRP" default="5" />
+  <arg name="TRAJEC_LINE_Y" default="9" />
 
   <!-- Joystick -->
   <node name="joy" pkg="joy" type="joy_node" output="screen" respawn="false">
@@ -31,7 +53,17 @@
   <node name="serial_to_sbus" pkg="serial_to_sbus" type="serial_to_sbus" respawn="false" output="screen"/>
 
   <!-- Trajectory -->
-  <!--node name="trajectory_generate" pkg="trajectory_generate" type="trajectory_generate" respawn="false" launch-prefix="" output="screen"/-->
+  <node name="trajectory_generate" pkg="trajectory_generate" type="trajectory_generate" respawn="false" launch-prefix="" output="screen">
+    <param name="x" value="0.0" />
+    <param name="y" value="0.0" />
+    <param name="z" value="0.5" />
+    <param name="yaw" value="0.0" />
+    <param name="rate" value="100" />
+    <param name="radius" value="0.3" />
+    <param name="enable_tracking" value="false" />
+    <param name="round_period"     value="4.0" />
+    <param name="trajectory_style" value="$(arg TRAJEC_CIRCLE)" />
+  </node>
 
   <!-- Viewer -->
   <!--node name="glviewer" pkg="glviewer" type="glviewer" output="screen"-->
