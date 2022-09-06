@@ -1,0 +1,149 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="joy_dev" default="/dev/input/js0" />
+
+  <!-- PID parameters -->
+  <rosparam file="$(find flight_controller)/config/pid_Bicopter.yaml"/>
+  <arg name="TRAJEC_CIRCLE"          default="1" />
+  <arg name="TRAJEC_SCAN"            default="2" />
+  <arg name="TRAJEC_STEP"            default="3" />
+  <arg name="TRAJEC_LINE_x"          default="4" />
+  <arg name="TRAJEC_CHIRP"           default="5" />
+  <arg name="TRAJEC_FF"              default="6" />
+  <arg name="TRAJEC_L1_CIRCLE"       default="7" />
+  <arg name="FLIP_OVER"              default="8" />
+  <arg name="TRAJEC_LINE_Y"          default="9" />
+  <arg name="TRAJEC_SQUARE"          default="10" />
+  <arg name="TRAJEC_AGGRESSIVEEIGHT" default="11" />
+  <arg name="TRAJEC_FLOWER"          default="12" />
+  <arg name="TRAJEC_FIGUREEIGHT"     default="13" />
+  <arg name="TRAJEC_MINSNAP"         default="14" />
+
+  <arg name="VEHICLE_WEIGHT"         default="0.60"/>
+  <arg name="VEHICLE_JYY"            default="0.008"/>
+  <arg name="VEHICLE_ARM_LENGTH"     default="0.04"/>
+  
+  <!-- Joystick -->
+  <node name="joy" pkg="joy" type="joy_node" output="screen" respawn="true">
+    <param name="dev" value="$(arg joy_dev)" />
+  </node>
+
+  <group ns="quad0">
+    <!-- Controller -->
+    <node name="flight_controller" pkg="flight_controller" type="bicopter_optitrack_controller" respawn="true" output="screen">
+    <!--maxAngle in degrees defines the maximum angle set in bf configurator-->
+      <param name="maxAngle"   value="55"/>
+      <param name="maxYawRate" value="300"/>
+      <param name="QUAD_NAME"  value="jackQuad"/>
+    </node>
+    
+    <!-- SBUS communication -->
+    <node name="serial_to_sbus" pkg="serial_to_sbus" type="serial_to_sbus" respawn="true" output="screen">
+      <param name="USB" value="/dev/ttySBUS0"/>
+    </node>
+
+    <!-- Minimum Snap trajectory generator -->
+    <node pkg="waypoint_trajectory_generator" type="trajectory_generator_node" name="trajectory_generator_node" output="screen" required = "true">
+      <param name="planning/vel"       value="4.0"  />
+      <param name="planning/acc"       value="4.0"  />
+      <param name="planning/dev_order" value="4"    />
+      <param name="planning/min_order" value="3"    />
+      <param name="vis/vis_traj_width" value="0.15" />
+    </node>
+
+    <!-- temporary waypoint signal publisher -->
+    <node pkg="signal_sub_pub" type="signal_sub_pub" name="signal_sub_pub">
+    </node>
+
+    <!-- Trajectory -->
+    <node name="trajectory_generate" pkg="trajectory_generate" type="trajectory_generate" respawn="false" launch-prefix="" output="screen">
+      <param name="x" value="0.0" />
+      <param name="y" value="-1.0" />
+      <param name="z" value="0.5" />
+      <param name="yaw" value="0.0" />
+      <param name="rate" value="100" />
+      <param name="radius" value="0.2" />
+      <param name="enable_tracking" value="true" />
+      <param name="round_period"     value="4.0" />
+      <param name="trajectory_style" value="$(arg TRAJEC_CIRCLE)" />
+      <param name="vehicle_weight" value="$(arg VEHICLE_WEIGHT)" />
+      <param name="vehicle_Jyy" value="$(arg VEHICLE_JYY)" />
+      <param name="vehicle_arm_length" value="$(arg VEHICLE_ARM_LENGTH)" />
+      <param name="QUAD_NAME" value="jackQuad"/>
+    </node>
+  </group>
+
+  <group ns="quad1">
+    <!-- Controller -->
+    <node name="flight_controller" pkg="flight_controller" type="bicopter_optitrack_controller" respawn="true" output="screen">
+    <!--maxAngle in degrees defines the maximum angle set in bf configurator-->
+      <param name="maxAngle"   value="55"/>
+      <param name="maxYawRate" value="300"/>
+      <param name="QUAD_NAME"  value="jackQuad1"/>
+    </node>
+    
+    <!-- SBUS communication -->
+    <node name="serial_to_sbus" pkg="serial_to_sbus" type="serial_to_sbus" respawn="true" output="screen">
+      <param name="USB" value="/dev/ttySBUS1"/>
+    </node>
+
+    <!-- Minimum Snap trajectory generator -->
+    <node pkg="waypoint_trajectory_generator" type="trajectory_generator_node" name="trajectory_generator_node" output="screen" required = "true">
+      <param name="planning/vel"       value="4.0"  />
+      <param name="planning/acc"       value="4.0"  />
+      <param name="planning/dev_order" value="4"    />
+      <param name="planning/min_order" value="3"    />
+      <param name="vis/vis_traj_width" value="0.15" />
+    </node>
+
+    <!-- temporary waypoint signal publisher -->
+    <node pkg="signal_sub_pub" type="signal_sub_pub" name="signal_sub_pub">
+    </node>
+
+    <!-- Trajectory -->
+    <node name="trajectory_generate" pkg="trajectory_generate" type="trajectory_generate" respawn="false" launch-prefix="" output="screen">
+      <param name="x" value="0.0" />
+      <param name="y" value="1.0" />
+      <param name="z" value="0.5" />
+      <param name="yaw" value="0.0" />
+      <param name="rate" value="100" />
+      <param name="radius" value="0.2" />
+      <param name="enable_tracking" value="true" />
+      <param name="round_period"     value="4.0" />
+      <param name="trajectory_style" value="$(arg TRAJEC_CIRCLE)" />
+      <param name="vehicle_weight" value="$(arg VEHICLE_WEIGHT)" />
+      <param name="vehicle_Jyy" value="$(arg VEHICLE_JYY)" />
+      <param name="vehicle_arm_length" value="$(arg VEHICLE_ARM_LENGTH)" />
+      <param name="QUAD_NAME" value="jackQuad1"/>
+    </node>
+  </group>
+
+  <!-- VRPN -->
+  <arg name="server" default="192.168.3.3"/>
+  <!--arg name="server" default="192.168.1.102"/-->
+  <node pkg="vrpn_client_ros" type="vrpn_client_node" name="vrpn_client_node" output="screen">
+    <rosparam subst_value="true">
+      server: $(arg server)
+      port: 3883
+
+      update_frequency: 100.0
+      frame_id: world
+
+      # Use the VRPN server's time, or the client's ROS time.
+      use_server_time: false
+      broadcast_tf: true
+
+      # Must either specify refresh frequency > 0.0, or a list of trackers to create
+      refresh_tracker_frequency: 100.0
+      #trackers:
+      #- FirstTracker
+      #- SecondTracker
+    </rosparam>
+  </node>
+
+  <!-- Viewer -->
+  <node name="glviewer" pkg="glviewer" type="glviewer" output="screen">
+  </node>
+
+
+</launch>

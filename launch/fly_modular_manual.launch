@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="joy_dev" default="/dev/input/js0" />
+
+  <!-- Joystick -->
+  <node name="joy" pkg="joy" type="joy_node" output="screen" respawn="false">
+    <param name="dev" value="$(arg joy_dev)" />
+  </node>
+
+  <group ns="puller">
+    <!-- Controller -->
+    <node name="flight_controller" pkg="flight_controller" type="bicopter_optitrack_controller" respawn="true" output="screen">
+    <!--maxAngle in degrees defines the maximum angle set in bf configurator-->
+      <param name="maxAngle"   value="55"/>
+      <param name="maxYawRate" value="300"/>
+    </node>
+
+    <!-- SBUS communication -->
+    <node name="serial_to_sbus" pkg="serial_to_sbus" type="serial_to_sbus" respawn="true" output="screen">
+      <param name="USB" value="/dev/ttySBUS0"/>
+    </node>
+  </group>
+
+  <group ns="pusher">
+    <!-- Controller -->
+    <node name="flight_controller" pkg="flight_controller" type="bicopter_optitrack_controller" respawn="true" output="screen">
+    <!--maxAngle in degrees defines the maximum angle set in bf configurator-->
+      <param name="maxAngle"   value="55"/>
+      <param name="maxYawRate" value="300"/>
+    </node>
+
+    <!-- SBUS communication -->
+    <node name="serial_to_sbus" pkg="serial_to_sbus" type="serial_to_sbus" respawn="true" output="screen">
+      <param name="USB" value="/dev/ttySBUS1"/>
+    </node>
+  </group>
+
+</launch>

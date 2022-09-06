@@ -22,36 +22,40 @@
   <arg name="VEHICLE_WEIGHT"         default="0.60"/>
   <arg name="VEHICLE_JYY"            default="0.008"/>
   <arg name="VEHICLE_ARM_LENGTH"     default="0.04"/>
-  
+
   <!-- Joystick -->
-  <node name="joy" pkg="joy" type="joy_node" output="screen" respawn="true">
+  <!--node name="joy" pkg="joy" type="joy_node" output="screen" respawn="false">
     <param name="dev" value="$(arg joy_dev)" />
-  </node>
+  </node-->
 
   <!-- Controller -->
   <node name="flight_controller" pkg="flight_controller" type="bicopter_optitrack_controller" respawn="true" output="screen">
     <!--maxAngle in degrees defines the maximum angle set in bf configurator-->
     <param name="maxAngle"   value="55"/>
     <param name="maxYawRate" value="300"/>
-    <param name="QUAD_NAME"  value="jackQuad"/>
   </node>
   
   <!-- SBUS communication -->
-  <node name="serial_to_sbus" pkg="serial_to_sbus" type="serial_to_sbus" respawn="true" output="screen"/>
+  <!--node name="serial_to_sbus" pkg="serial_to_sbus" type="serial_to_sbus" respawn="true" output="screen"/-->
 
-    <!-- Minimum Snap trajectory generator -->
+  <!-- Minimum Snap trajectory generator -->
   <node pkg="waypoint_trajectory_generator" type="trajectory_generator_node" name="trajectory_generator_node" output="screen" required = "true">
+    
     <param name="planning/vel"       value="4.0"  />
     <param name="planning/acc"       value="4.0"  />
-    <param name="planning/dev_order" value="4"    />
-    <param name="planning/min_order" value="3"    />
+    <param name="planning/dev_order" value="5"    />
+    <param name="planning/min_order" value="5"    />
     <param name="vis/vis_traj_width" value="0.15" />
+
   </node>
 
-  <!-- temporary waypoint signal publisher -->
+  <!-- temporary signal publisher -->
   <node pkg="signal_sub_pub" type="signal_sub_pub" name="signal_sub_pub">
   </node>
 
+  <!-- offline poly coeff publisher -->
+  <!--node pkg="signal_sub_pub" type="poly_publisher" name="minsnap_poly_publisher"/-->
+  
   <!-- Trajectory -->
   <node name="trajectory_generate" pkg="trajectory_generate" type="trajectory_generate" respawn="false" launch-prefix="" output="screen">
     <param name="x" value="0.0" />
@@ -68,9 +72,10 @@
     <param name="vehicle_arm_length" value="$(arg VEHICLE_ARM_LENGTH)" />
   </node>
 
+  
+
   <!-- VRPN -->
-  <arg name="server" default="192.168.31.54"/>
-  <!--arg name="server" default="192.168.1.102"/-->
+  <!--arg name="server" default="192.168.31.54"/>
   <node pkg="vrpn_client_ros" type="vrpn_client_node" name="vrpn_client_node" output="screen">
     <rosparam subst_value="true">
       server: $(arg server)
@@ -84,12 +89,12 @@
       broadcast_tf: true
 
       # Must either specify refresh frequency > 0.0, or a list of trackers to create
-      refresh_tracker_frequency: 100.0
+      refresh_tracker_frequency: 1.0
       #trackers:
       #- FirstTracker
       #- SecondTracker
     </rosparam>
-  </node>
+  </node-->
 
   <!-- Viewer -->
   <!--node name="glviewer" pkg="glviewer" type="glviewer" output="screen"-->
